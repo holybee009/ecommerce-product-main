@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- displays site properly based on user's device -->
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./images/favicon-32x32.png"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.google.com/specimen/Kumbh+Sans?query=kumbh"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Ubuntu|Lora"
+    />
+
+    <title>Frontend Mentor | E-commerce product page</title>
+
+    <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
+    <style>
+      body {
+        font-family: "Kumbh Sans", "Ubuntu", "Lora", sans-serif;
+        position: relative;
+      }
+      .modal-box {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: none;
+      }
+      .modal {
+        background-color: hsla(217, 9%, 45%, 0.801);
+        width: 100vw;
+        height: 100vh;
+      }
+      .overall {
+        position: relative;
+      }
+      .modal-box .image-section {
+        position: absolute;
+        z-index: 99;
+        top: 0;
+        left: 0;
+        transform: translate(40vw, 20vh);
+      }
+      .modal-box .img-box {
+        position: relative;
+      }
+      .images .icons {
+        position: absolute;
+        background-color: hsl(0, 0%, 100%);
+        padding: 3%;
+        border-radius: 50%;
+        width: 12px;
+        height: 12px;
+      }
+      .screen .image-section .icons {
+        display: none;
+      }
+      .modal-box .images #previous {
+        top: 50%;
+        left: 0;
+        transform: translateX(-50%);
+      }
+      .modal-box .images #next {
+        top: 50%;
+        right: 0;
+        transform: translateX(50%);
+      }
+      .attribution {
+        font-size: 11px;
+        text-align: center;
+      }
+      .attribution a {
+        color: hsl(228, 45%, 44%);
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 10vw;
+        border-bottom: 1px solid hsla(220, 14%, 75%, 0.404);
+      }
+      .logo {
+        letter-spacing: -3px;
+      }
+
+      .header-left,
+      .header-right {
+        display: flex;
+        gap: 2vw;
+        align-items: center;
+      }
+      .header-right {
+        position: relative;
+      }
+      .cart-box {
+        position: absolute;
+        background-color: hsl(223, 64%, 98%);
+        top: 100%;
+        width: 20vw;
+        height: 30vh;
+        transform: translateX(-50%);
+        padding: 0 10%;
+        box-shadow: 2px 7px 15px hsl(219, 9%, 45%);
+        display: none;
+        z-index: 100;
+      }
+      .empty {
+        text-align: center;
+        margin-top: 10vh;
+      }
+      .fill-cart {
+        display: none;
+        grid-template-areas:
+          "image image head head head head delete"
+          "image image calc calc calc calc delete"
+          "checkout checkout checkout checkout checkout checkout checkout";
+        justify-content: space-between;
+      }
+      .cart-box h3 {
+        border-bottom: 1px solid hsla(217, 9%, 45%, 0.404);
+      }
+      .cart-box .imagesel {
+        grid-area: image;
+        width: 80%;
+        /* border-radius: 7px; */
+        margin-right: 7px;
+        align-self: center;
+      }
+      .cart-box .head {
+        grid-area: head;
+      }
+      .cart-box .calc {
+        grid-area: calc;
+      }
+      .cart-box .delete {
+        grid-area: delete;
+        align-self: center;
+        cursor: pointer;
+      }
+      .cart-box .checkout {
+        grid-area: checkout;
+        justify-self: center;
+        text-transform: capitalize;
+        background-color: hsl(26, 100%, 55%);
+        color: hsl(0, 0%, 100%);
+        width: 100%;
+        text-align: center;
+        padding: 3% 0;
+        border-radius: 7px;
+        cursor: pointer;
+      }
+
+      .header-left p {
+        text-transform: capitalize;
+        color: hsl(219, 9%, 45%);
+        cursor: pointer;
+        margin: 0;
+        padding-block-start: 1.2em;
+        padding-block-end: 1.2em;
+      }
+      .header-left p:hover {
+        color: hsl(220, 13%, 13%);
+        border-bottom: 4px solid hsl(26, 100%, 55%);
+      }
+      .header-left .logo {
+        margin: 0;
+      }
+      .cart {
+        max-width: 24px;
+        max-height: 24px;
+        cursor: pointer;
+      }
+      .avatar {
+        max-width: 32px;
+        max-height: 32px;
+        cursor: pointer;
+        border-radius: 50%;
+      }
+      .avatar:hover {
+        border: 2px solid hsl(26, 100%, 55%);
+      }
+      /* the body part */
+      .body {
+        padding: 10vh 12vw;
+        gap: 10%;
+      }
+      .body,
+      .images,
+      .image-thumbnail {
+        display: flex;
+      }
+      .images,
+      .images-mod {
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 25vw;
+        cursor: pointer;
+      }
+
+      .image-thumbnail {
+        max-width: 25vw;
+        justify-content: space-between;
+        overflow: hidden;
+        margin-top: 5%;
+      }
+      .images img {
+        max-width: 25vw;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .mod-image {
+        width: 25vw;
+        margin: 0;
+        cursor: pointer;
+      }
+      .image-thumbnail img {
+        max-width: 5vw;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .image-thumbnail img:first-of-type {
+        filter: opacity(40%);
+        border: 3px solid hsl(26, 100%, 55%);
+      }
+
+      /* modal end */
+      .text-section {
+        padding: 5vh;
+      }
+      .company {
+        text-transform: uppercase;
+        color: hsl(26, 100%, 55%);
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0;
+      }
+      .limited {
+        text-transform: capitalize;
+        font-weight: 700;
+        margin: 0;
+        margin: 2vh 0 5vh;
+      }
+      .text {
+        margin-bottom: 3vh;
+        color: hsl(219, 9%, 45%);
+      }
+      .price {
+        font-size: 32px;
+        font-weight: 700;
+      }
+      .discount {
+        color: hsl(26, 100%, 55%);
+        background-color: hsl(25, 100%, 94%);
+        font-size: 16px;
+        margin-left: 0.5em;
+        padding: 5px 7px;
+        border-radius: 5px;
+      }
+      .change {
+        color: hsl(219, 9%, 45%);
+        text-decoration: line-through;
+      }
+      .submit,
+      .range {
+        display: flex;
+      }
+      .submit {
+        margin-top: 10vh;
+        gap: 5%;
+      }
+      .range {
+        width: 100px;
+        background-color: hsla(220, 14%, 75%, 0.301);
+        padding: 0 10px;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 10px;
+      }
+      .number {
+        margin: 0;
+        padding: 0;
+      }
+      .range .minus {
+        height: 6px;
+      }
+      .range img {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        padding: 0;
+        cursor: pointer;
+      }
+      .add-cart {
+        background-color: hsl(26, 100%, 55%);
+        border-radius: 10px;
+        width: 20vw;
+        padding: 1.5vh 0;
+        text-align: center;
+        color: hsl(0, 0%, 100%);
+        cursor: pointer;
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .add-cart:hover {
+        filter: opacity(90%);
+        box-shadow: 2px 2px 3px hsl(26, 100%, 55%);
+      }
+      .svg {
+        fill: #fff;
+      }
+      .result {
+        font-weight: 700;
+      }
+      .close {
+        display: none;
+      }
+      .menu-icon {
+        display: none;
+      }
+      .menu .menu-box {
+        display: flex;
+        gap: 2vw;
+      }
+      @media (max-width: 500px) {
+        .header {
+          padding: 7px 3vw;
+        }
+        .body {
+          padding: 0;
+        }
+        .text-section {
+          padding: 3vh 5vw;
+        }
+        .menu-icon {
+          display: block;
+          align-self: center;
+          justify-self: center;
+          cursor: pointer;
+        }
+        body {
+          position: relative;
+        }
+        .menu {
+          display: none;
+          z-index: 120;
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 100vh;
+          width: 100vw;
+        }
+        /* .header-left {
+         
+        } */
+        .menu .menu-box {
+          background-color: hsl(0, 0%, 100%);
+          flex-direction: column;
+          height: 100vh;
+          width: 50vw;
+          position: absolute;
+          z-index: 150;
+          top: 0;
+          left: 0;
+          padding: 3%;
+          gap: 15px;
+        }
+        .menu .menu-box p {
+          padding: 2% 0;
+          font-weight: 700;
+        }
+        .header-left p:hover {
+          color: hsl(220, 13%, 13%);
+          border-bottom: none;
+        }
+        .menu .menu-modal {
+          background-color: hsla(217, 9%, 45%, 0.801);
+          height: 100vh;
+          width: 100vw;
+          cursor: pointer;
+        }
+        .close {
+          display: block;
+          width: 16px;
+          height: 16px;
+          margin-bottom: 30px;
+          cursor: pointer;
+        }
+        .body {
+          display: block;
+          padding: 0;
+        }
+        .image-thumbnail {
+          display: none;
+        }
+        .images {
+          max-width: 100vw;
+          height: 50vh;
+          position: relative;
+          margin: auto;
+        }
+        .images .img {
+          border-radius: 0;
+          max-width: 100vw;
+        }
+        .screen .image-section .icons {
+          display: block;
+          position: absolute;
+          width: 12px;
+          height: 12px;
+        }
+        .screen .images #previous {
+          top: 50%;
+          left: 0;
+          transform: translateX(50%);
+        }
+        .screen .images #next {
+          top: 50%;
+          right: 0;
+          transform: translateX(-50%);
+        }
+        .change {
+          display: inline;
+        }
+        .submit {
+          display: block;
+          margin: 0;
+        }
+        .range,
+        .add-cart {
+          padding: 15px;
+          margin-top: 3%;
+          width: 100%;
+        }
+        .cart-box {
+          width: 80vw;
+          transform: translateX(-80%);
+          border-radius: 10px;
+          margin-top: 30%;
+        }
+        .limited {
+          margin: 0;
+          font-size: 24px;
+        }
+        .company {
+          margin-bottom: 1vh;
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-left">
+        <img src="images/icon-menu.svg" alt="menu" class="menu-icon" />
+        <h1 class="logo">sneakers</h1>
+
+        <div class="menu">
+          <div class="menu-modal"></div>
+          <div class="menu-box">
+            <img src="images/icon-close.svg" alt="close" class="close" />
+            <p>Collections</p>
+            <p>Men</p>
+            <p>Women</p>
+            <p>About</p>
+            <p>contact</p>
+          </div>
+        </div>
+      </div>
+      <div class="header-right">
+        <img src="images/icon-cart.svg" alt="cart" class="cart" />
+        <img src="images/image-avatar.png" alt="avatar" class="avatar" />
+        <div class="cart-box">
+          <h3>cart</h3>
+          <div class="empty">your cart is empty</div>
+          <div class="fill-cart">
+            <img
+              src="images/image-product-1-thumbnail.jpg"
+              alt="image"
+              class="imagesel"
+            />
+            <div class="head">Fall Limited Edition Sneakers</div>
+            <div class="calc">
+              <span class="disc">$125.00</span> x
+              <span class="cart-num"></span>
+              <span class="result"></span>
+            </div>
+            <img
+              src="images/icon-delete.svg"
+              alt="icon-delete"
+              class="delete"
+            />
+            <p class="checkout">checkout</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="screen">
+        <div class="image-section">
+          <div class="images">
+            <img
+              src="images/icon-previous.svg"
+              alt="previous"
+              class="icons"
+              id="previous"
+            />
+            <img src="images/image-product-1.jpg" alt="img" class="img" />
+            <img src="images/image-product-2.jpg" alt="img" class="img" />
+            <img src="images/image-product-3.jpg" alt="img" class="img" />
+            <img src="images/image-product-4.jpg" alt="img" class="img" />
+            <img
+              src="images/icon-next.svg"
+              alt="next"
+              class="icons"
+              id="next"
+            />
+          </div>
+        </div>
+        <div class="image-thumbnail">
+          <img
+            src="images/image-product-1-thumbnail.jpg"
+            alt="img"
+            id="0"
+            class="thumb"
+          />
+          <img
+            src="images/image-product-2-thumbnail.jpg"
+            alt="img"
+            id="1"
+            class="thumb"
+          />
+          <img
+            src="images/image-product-3-thumbnail.jpg"
+            alt="img"
+            id="2"
+            class="thumb"
+          />
+          <img
+            src="images/image-product-4-thumbnail.jpg"
+            alt="img"
+            id="3"
+            class="thumb"
+          />
+        </div>
+      </div>
+      <div class="modal-box">
+        <div class="overall">
+          <div class="modal"></div>
+          <div class="image-section">
+            <div class="img-box">
+              <div class="images">
+                <img
+                  src="images/icon-previous.svg"
+                  alt="previous"
+                  class="icons"
+                  id="previous"
+                />
+                <div class="images-mod">
+                  <img
+                    src="images/image-product-1.jpg"
+                    alt="img"
+                    class="mod-image"
+                  />
+                  <img
+                    src="images/image-product-2.jpg"
+                    alt="img"
+                    class="mod-image"
+                  />
+                  <img
+                    src="images/image-product-3.jpg"
+                    alt="img"
+                    class="mod-image"
+                  />
+                  <img
+                    src="images/image-product-4.jpg"
+                    alt="img"
+                    class="mod-image"
+                  />
+                </div>
+                <img
+                  src="images/icon-next.svg"
+                  alt="next"
+                  class="icons"
+                  id="next"
+                />
+              </div>
+            </div>
+            <div class="image-thumbnail">
+              <img
+                src="images/image-product-1-thumbnail.jpg"
+                alt="img"
+                id="0"
+              />
+              <img
+                src="images/image-product-2-thumbnail.jpg"
+                alt="img"
+                id="1"
+              />
+              <img
+                src="images/image-product-3-thumbnail.jpg"
+                alt="img"
+                id="2"
+              />
+              <img
+                src="images/image-product-4-thumbnail.jpg"
+                alt="img"
+                id="3"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="text-section">
+        <p class="company">Sneaker Company</p>
+        <h1 class="limited">Fall Limited Edition Sneakers</h1>
+        <p class="text">
+          These low-profile sneakers are your perfect casual wear companion.
+          Featuring a durable rubber outer sole, they’ll withstand everything
+          the weather can offer.
+        </p>
+        <div class="price">$125.00<span class="discount">50%</span></div>
+
+        <div class="change">$250.00</div>
+        <div class="submit">
+          <div class="range">
+            <img src="images/icon-minus.svg" alt="less" class="minus" />
+            <div class="number">0</div>
+            <img src="images/icon-plus.svg" alt="more" class="plus" />
+          </div>
+          <div class="add-cart">
+            <img src="images/icon-cart-2.svg" alt="cart" class="svg" />
+            <span>add to cart</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="attribution">
+      Challenge by
+      <a href="https://www.frontendmentor.io?ref=challenge" target="_blank"
+        >Frontend Mentor</a
+      >
+      Coded by <a href="#">Oshodi Abdulmumin</a>.
+    </div>
+    <script type="text/javascript">
+      const imagesSlide = document.querySelector(".images");
+      const modImagesSlide = document.querySelector(".images-mod");
+      const modalOverlay = document.querySelector(".modal-box");
+      const backDrop = document.querySelector(".modal");
+      const cart = document.querySelector(".cart");
+      const cartBox = document.querySelector(".cart-box");
+      const rightHeader = document.querySelector(".header-right");
+      const imageThumbnail = document.querySelectorAll(
+        ".image-thumbnail .thumb"
+      );
+      const images = document.querySelectorAll(".images .img");
+      const modalImageThumbnail = document.querySelectorAll(
+        ".modal-box .image-thumbnail img"
+      );
+      const modalImages = document.querySelectorAll(".modal-box .mod-image");
+      const firstImg = modImagesSlide.querySelectorAll(
+        ".modal-box .mod-image"
+      )[0];
+      const reduce = document.querySelector(".range .minus");
+      const increase = document.querySelector(".range .plus");
+      const numberValue = document.querySelector(".range .number");
+      const icons = document.querySelectorAll(".icons");
+      const emptyCart = document.querySelector(".empty");
+      const filledCart = document.querySelector(".fill-cart");
+      const cartSubmit = document.querySelector(".add-cart");
+      const selectedImage = document.querySelector(".imagesel");
+      const cartNum = document.querySelector(".cart-num");
+      const finalResult = document.querySelector(".result");
+      const deleteCart = document.querySelector(".delete");
+      const headerr = document.querySelector(".header");
+      const bodyBox = document.querySelector(".body");
+      const menu = document.querySelector(".menu");
+      const menuIcon = document.querySelector(".menu-icon");
+      const menuModal = document.querySelector(".menu-modal");
+      const closeMenu = document.querySelector(".close");
+
+      let thumbnails = [...imageThumbnail];
+      let imageList = [...images];
+      let modalImageThumb = [...modalImageThumbnail];
+      let modalImg = [...modalImages];
+      let slideIcons = [...icons];
+
+      menuIcon.addEventListener("click", showMenu);
+      closeMenu.addEventListener("click", hideMenu);
+      menuModal.addEventListener("click", hideMenu);
+      function showMenu() {
+        menu.style.display = "block";
+      }
+      function hideMenu() {
+        menu.style.display = "none";
+      }
+      deleteCart.addEventListener("click", () => {
+        filledCart.style.display = "none";
+        emptyCart.style.display = "block";
+      });
+      cartSubmit.addEventListener("click", () => {
+        cartNum.innerHTML = numberValue.innerHTML;
+        const final = 125.0 * Number(cartNum.innerHTML);
+        finalResult.innerHTML = "$" + final.toFixed(2);
+        emptyCart.style.display = "none";
+        filledCart.style.display = "grid";
+        cartBox.style.display = "block";
+      });
+      bodyBox.addEventListener("click", () => {
+        // cartBox.style.display = "none";
+        console.log("this is the body");
+      });
+      let slideIndex = 1;
+      slideIcons.map((icon) => {
+        if (icon.id === "previous") {
+          icon.addEventListener("click", () => {
+            plusSlides(-1);
+          });
+        } else {
+          icon.addEventListener("click", () => {
+            plusSlides(1);
+          });
+        }
+      });
+
+      // next/previous controls
+      function plusSlides(n) {
+        slideIndex += n;
+        // currentImage(slideIndex);
+        showSlides(slideIndex);
+      }
+
+      // thumbnails image controls
+      function currentSlide(n) {
+        // currentImage(n);
+        showSlides((slideIndex = n));
+      }
+
+      function showSlides(n) {
+        let i;
+        if (n > modalImg.length) {
+          slideIndex = 1;
+        }
+        if (n < 1) {
+          slideIndex = modalImg.length;
+        }
+        for (i = 0; i < modalImg.length; i++) {
+          modalImg[i].style.display = "none";
+        }
+        for (i = 0; i < modalImageThumb.length; i++) {
+          modalImageThumb[i].style.filter = "opacity(100%)";
+          modalImageThumb[i].style.border = "none";
+        }
+        for (i = 0; i < imageList.length; i++) {
+          imageList[i].style.display = "none";
+        }
+        for (i = 0; i < thumbnails.length; i++) {
+          thumbnails[i].style.filter = "opacity(100%)";
+          thumbnails[i].style.border = "none";
+        }
+        modalImg[slideIndex - 1].style.display = "block";
+        modalImageThumb[slideIndex - 1].style.filter = "opacity(40%)";
+        modalImageThumb[slideIndex - 1].style.border =
+          "3px solid hsl(26, 100%, 55%)";
+        imageList[slideIndex - 1].style.display = "block";
+        thumbnails[slideIndex - 1].style.filter = "opacity(40%)";
+        thumbnails[slideIndex - 1].style.border =
+          "3px solid hsl(26, 100%, 55%)";
+        thumbnails.map((tnail, i, arrr) => {
+          selectedImage.src = arrr[slideIndex - 1].src;
+        });
+      }
+
+      imagesSlide.addEventListener("click", () => {
+        window.innerWidth >= 500 && (modalOverlay.style.display = "block");
+      });
+      backDrop.addEventListener("click", () => {
+        modalOverlay.style.display = "none";
+      });
+      cart.addEventListener("click", () => {
+        if (cartBox.style.display === "none") {
+          cartBox.style.display = "block";
+        } else {
+          cartBox.style.display = "none";
+        }
+      });
+      cart.addEventListener("mouseover", () => {
+        cartBox.style.display = "block";
+      });
+      thumbnails.map((thumbs, i, arr) => {
+        thumbs.addEventListener("click", () => {
+          currentSlide(i + 1);
+        });
+      });
+      modalImageThumb.map((thumbs, i, arr) => {
+        thumbs.addEventListener("click", () => {
+          currentSlide(i + 1);
+        });
+      });
+
+      reduce.addEventListener("click", () => {
+        numberValue.innerHTML > 0 &&
+          (numberValue.innerHTML = Number(numberValue.innerHTML) - 1);
+      });
+      increase.addEventListener("click", () => {
+        numberValue.innerHTML = Number(numberValue.innerHTML) + 1;
+      });
+    </script>
+  </body>
+</html>
